@@ -24,7 +24,7 @@ class CacheEngine {
     this.defaultTTL = ms(cacheOptions.defaultTTL ?? '1 minute')
 
     if (cacheOptions.engine === 'redis' && cacheOptions.engineOptions) {
-      this.engine = new RedisCacheEngine(cacheOptions.engineOptions)
+      this.engine = new RedisCacheEngine(cacheOptions.engineOptions, cacheOptions.startupNodes)
     }
 
     if (cacheOptions.engine === 'memory') {

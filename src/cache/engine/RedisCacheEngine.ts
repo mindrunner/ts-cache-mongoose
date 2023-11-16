@@ -1,18 +1,23 @@
 import IORedis from 'ioredis'
 import mongoose, { Types } from 'mongoose'
 
-import type { Redis, RedisOptions } from 'ioredis'
+import type { Redis, RedisOptions , Cluster , ClusterNode, ClusterOptions } from 'ioredis'
 import type IData from '../../interfaces/IData'
 import type ICacheEngine from '../../interfaces/ICacheEngine'
 
 class RedisCacheEngine implements ICacheEngine {
-  private client: Redis
+  private client: Redis | Cluster
 
-  constructor (options: RedisOptions) {
+
+  constructor (options: RedisOptions | ClusterOptions, startupNodes?: ClusterNode[]) {
     if (!options.keyPrefix) {
       options.keyPrefix = 'cache-mongoose:'
     }
-    this.client = new IORedis(options)
+    if(startupNodes) {
+      this.client = new IORedis.Cluster(startupNodes, options)
+    } else {
+      this.client = new IORedis(options)
+    }
   }
 
   async get (key: string): Promise<IData> {
